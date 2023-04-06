@@ -1,43 +1,67 @@
 import datetime
+from typing_extensions import  Annotated
 from generic_settings import app_root_path
-from sqlalchemy import (create_engine, Integer, String, Float, Boolean)
-from sqlalchemy.orm import (DeclarativeBase, declarative_base, Session, Mapped, mapped_column)
+from sqlalchemy import (create_engine, String, Float, ForeignKey, func)
+from sqlalchemy.orm import (DeclarativeBase, Session, Mapped, mapped_column)
 
 year = datetime.datetime.now().year
 
-engine = create_engine('sqlite:///'+f'{app_root_path}\\database\\{year}.db'.replace("//", '/').replace('/', '\\'))
+engine = create_engine('sqlite:///'+f'{app_root_path}\\database\\{year}.db', connect_args={"check_same_thread": False})
+
+
+timestamp = Annotated[
+    datetime.datetime,
+    mapped_column(nullable=False, server_default=func.CURRENT_TIMESTAMP()),
+]
 
 
 class Base(DeclarativeBase):
     pass
 
 
-class Accounts(Base):
+class Account(Base):
     __tablename__ = "conti"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(20), unique=True)
 
+    def __repr__(self):
+        return f"{self.__tablename__}(id={self.id}, name={self.name})"
 
-class Clients(Base):
+
+class Client(Base):
     __tablename__ = "clienti"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(20), unique=True)
+
+    def __repr__(self):
+        return f"{self.__tablename__}(id={self.id}, name={self.name})"
 
 
 class Journal(Base):
     __tablename__ = "conto giornaliero"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    date: Mapped[timestamp] = mapped_column(server_default=func.UTC_TIMESTAMP(), index=True)
     giverId: Mapped[int] = mapped_column(index=True)
     getterId: Mapped[int] = mapped_column(index=True)
-    Amount: Mapped[float] = mapped_column(Float(10, 2))
-    Note: Mapped[str] = mapped_column(String(100))
+    amount: Mapped[float] = mapped_column(Float(10, 2))
+    note: Mapped[str] = mapped_column(String(100))
+    userId: Mapped[int] = mapped_column(ForeignKey("utenti.id"), index=True)
+
+    def __repr__(self):
+        return f"{self.__tablename__}(id={self.id}, date={self.date}, giverId={self.giverId}, \
+getterId={self.getterId}, amount={self.amount}, note={self.note}, userId={self.userId})"
 
 
-class Users(Base):
+class User(Base):
     __tablename__ = "utenti"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column(String(20), unique=True)
     password: Mapped[str] = mapped_column(String(15))
 
+    def __repr__(self):
+        return f"{self.__tablename__}(id={self.id}, username={self.username}, password={self.password})"
+
 
 Base.metadata.create_all(bind=engine)
+
+MySession = Session(engine)
