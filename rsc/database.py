@@ -21,16 +21,17 @@ class Base(DeclarativeBase):
 
 
 class Account(Base):
-    __tablename__ = "conti"
+    __tablename__ = "bank accounts"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(20), unique=True)
+    balance: Mapped[float] = mapped_column(Float(10, 2))
 
     def __repr__(self):
-        return f"{self.__tablename__}(id={self.id}, name={self.name})"
+        return f"{self.__tablename__}(id={self.id}, name={self.name}, balance={self.balance})"
 
 
 class Client(Base):
-    __tablename__ = "clienti"
+    __tablename__ = "clients"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(20), unique=True)
     address: Mapped[str] = mapped_column(String(50))
@@ -43,14 +44,14 @@ class Client(Base):
 
 
 class Journal(Base):
-    __tablename__ = "conto giornaliero"
+    __tablename__ = "journal account"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     date: Mapped[timestamp] = mapped_column(server_default=func.UTC_TIMESTAMP(), index=True)
     giverId: Mapped[int] = mapped_column(index=True)
     getterId: Mapped[int] = mapped_column(index=True)
     amount: Mapped[float] = mapped_column(Float(10, 2))
     note: Mapped[str] = mapped_column(String(100))
-    userId: Mapped[int] = mapped_column(ForeignKey("utenti.id"), index=True)
+    userId: Mapped[int] = mapped_column(ForeignKey("user.id"), index=True)
 
     def __repr__(self):
         return f"{self.__tablename__}(id={self.id}, date={self.date}, giverId={self.giverId}, \
@@ -58,7 +59,7 @@ getterId={self.getterId}, amount={self.amount}, note={self.note}, userId={self.u
 
 
 class User(Base):
-    __tablename__ = "utenti"
+    __tablename__ = "user"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column(String(20), unique=True)
     password: Mapped[str] = mapped_column(String(40))
