@@ -97,3 +97,14 @@ def register_new_user(username: str, password: str) -> bool:
         session.add(user)
         session.commit()
         return True
+
+
+def delete_user(username: str, password: str):
+    if validate_user(username, password):
+        with database.MySession as session:
+            stmt = select(database.User).where(username == username)
+            user = session.scalar(stmt)
+            session.delete(user)
+            session.commit()
+            print(f"user={username} is deleted.")
+
