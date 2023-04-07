@@ -1,10 +1,7 @@
 import hashlib
 from .. import database
 from sqlalchemy import select
-
-
-class ValidationError(Exception):
-    pass
+from .errors import ValidationError
 
 
 def _is_username_valid(username: str) -> bool:
