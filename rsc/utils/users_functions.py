@@ -22,7 +22,7 @@ def _is_username_valid(username: str) -> bool:
     return True
 
 
-def _is_password_valid(password) ->bool:
+def _is_password_valid(password) -> bool:
     """if password contains upper, lower, number, and special char, returns True, else False"""
     if not isinstance(password, str):
         return False
@@ -44,14 +44,14 @@ def _is_password_valid(password) ->bool:
             if char.isdigit():
                 has_number = True
         if not has_special:
-            if char in '''!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~''':
+            if char in r'''!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~''':
                 has_special = True
 
         if has_upper and has_lower and has_number and has_special:
             return True
 
 
-def _hash_password(password) -> str:
+def _hash_password(password) -> str | None:
     """return hashed password"""
     if not isinstance(password, str):
         return
