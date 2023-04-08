@@ -33,6 +33,7 @@ class Account(Base):
 class Client(Base):
     __tablename__ = "clients"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    clientId: Mapped[int] = mapped_column(unique=True)  # 从100开始自增长的数据，以区分Account和Client。
     name: Mapped[str] = mapped_column(String(20), unique=True)
     address: Mapped[str] = mapped_column(String(50))
     province: Mapped[str] = mapped_column(String(10), index=True)

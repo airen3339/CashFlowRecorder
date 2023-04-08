@@ -1,6 +1,7 @@
 from ..database import MySession, Client, Journal
 from .errors import ValidationError
 from sqlalchemy import select, update, or_
+from sqlalchemy import func
 
 
 def _is_str(string) -> bool:
@@ -32,8 +33,11 @@ province={province}, phone={phone}, email={email} arent all str, plz check.')
         if client:
             print(f'client {client} already exists.')
             return False
-
-        client = Client(name=client_name, address=address, province=province, phone=phone, email=email)
+        max_id = session.query(func.max(Client.clientId)).scalar()
+        if not max_id:
+            max_id = 100
+        clientId = max_id + 1
+        client = Client(name=client_name, clientId=clientId, address=address, province=province, phone=phone, email=email)
         session.add(client)
         session.commit()
 
